@@ -268,6 +268,28 @@ void SegundoFracaoFuncao()
   }
 }
 
+void AlteraMicroSeg() {
+
+
+  //Cria MicroSeg Virtusal
+  Segundo = second();
+  if (MilissegundoSeg == Segundo)
+  {
+    Microssegundo =  Microssegundo + MinTimer;
+    if (Microssegundo > 999999)
+    {
+      Microssegundo = 999999;
+    }
+    SegundoFracao = Microssegundo * 0.000001;
+    SegundoFracao = SegundoFracao + Segundo;
+  }
+  else
+  {
+    MilissegundoSeg = Segundo;
+    Microssegundo = 1;
+  }
+}
+
 
 
 

@@ -9,8 +9,8 @@ CoordsLib::CoordsLib() {
 }
 
 /*
- * Calculates the inverse of the m[3x3] matrix and returns it in the second parameter.
- */
+   Calculates the inverse of the m[3x3] matrix and returns it in the second parameter.
+*/
 void CoordsLib::_inv(float m[3][3], float res[3][3]) {
   float idet;
 
@@ -34,9 +34,9 @@ void CoordsLib::_inv(float m[3][3], float res[3][3]) {
 }
 
 /*
- * Multiplies two matrices, m1[3x3] and m2[3x3], and returns the result in
- * the third parameter.
- */
+   Multiplies two matrices, m1[3x3] and m2[3x3], and returns the result in
+   the third parameter.
+*/
 void CoordsLib::_m_prod(float m1[3][3], float m2[3][3], float res[3][3]) {
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; j++) {
@@ -47,8 +47,8 @@ void CoordsLib::_m_prod(float m1[3][3], float m2[3][3], float res[3][3]) {
 }
 
 /*
- * Calculates the Vector cosines (EVC) from the equatorial coordinates (ar, dec, t).
- */
+   Calculates the Vector cosines (EVC) from the equatorial coordinates (ar, dec, t).
+*/
 void CoordsLib::_setEVC(float ar, float dec, float t, float* EVC) {
   EVC[0] = cos(dec) * cos(ar - _k * (t - _t0));
   EVC[1] = cos(dec) * sin(ar - _k * (t - _t0));
@@ -56,8 +56,8 @@ void CoordsLib::_setEVC(float ar, float dec, float t, float* EVC) {
 }
 
 /*
- * Calculates the Vector cosines (HVC) from the horizontal coordinates (ac, alt).
- */
+   Calculates the Vector cosines (HVC) from the horizontal coordinates (ac, alt).
+*/
 void CoordsLib::_setHVC(float ac, float alt, float* HVC) {
   HVC[0] = cos(alt) * cos(ac);
   HVC[1] = cos(alt) * sin(ac);
@@ -65,16 +65,16 @@ void CoordsLib::_setHVC(float ac, float alt, float* HVC) {
 }
 
 /*
- * Sets the initial observation time.
- */
+   Sets the initial observation time.
+*/
 void CoordsLib::setTime(float t0) {
   _t0 = t0;
 }
 
 /*
- * Sets the first reference object.
- * If all the reference objects have been established, calls the function that calculates T and iT.
- */
+   Sets the first reference object.
+   If all the reference objects have been established, calls the function that calculates T and iT.
+*/
 void CoordsLib::setRef_1(float ar, float dec, float t, float ac, float alt) {
   _setEVC(ar, dec, t, _LMN1);
   _setHVC(ac, alt, _lmn1);
@@ -86,9 +86,9 @@ void CoordsLib::setRef_1(float ar, float dec, float t, float ac, float alt) {
 }
 
 /*
- * Sets the second reference object.
- * If all the reference objects have been established, calls the function that calculates T and iT.
- */
+   Sets the second reference object.
+   If all the reference objects have been established, calls the function that calculates T and iT.
+*/
 void CoordsLib::setRef_2(float ar, float dec, float t, float ac, float alt) {
   _setEVC(ar, dec, t, _LMN2);
   _setHVC(ac, alt, _lmn2);
@@ -100,9 +100,9 @@ void CoordsLib::setRef_2(float ar, float dec, float t, float ac, float alt) {
 }
 
 /*
- * Sets the third reference object.
- * If all the reference objects have been established, calls the function that calculates T and iT.
- */
+   Sets the third reference object.
+   If all the reference objects have been established, calls the function that calculates T and iT.
+*/
 void CoordsLib::setRef_3(float ar, float dec, float t, float ac, float alt) {
   _setEVC(ar, dec, t, _LMN3);
   _setHVC(ac, alt, _lmn3);
@@ -113,16 +113,16 @@ void CoordsLib::setRef_3(float ar, float dec, float t, float ac, float alt) {
 }
 
 /**
- * Indicates if the three reference objects have been established.
- */
+   Indicates if the three reference objects have been established.
+*/
 bool CoordsLib::isConfigured() {
   return (_isSetR1 && _isSetR2 && _isSetR3);
 }
 
 /*
- * Third reference object calculated from the cross product of the two first ones.
- * Then calls the function that calculates T and iT.
- */
+   Third reference object calculated from the cross product of the two first ones.
+   Then calls the function that calculates T and iT.
+*/
 void CoordsLib::autoRef_3() {
   float sqrt1, sqrt2;
 
@@ -150,8 +150,8 @@ void CoordsLib::autoRef_3() {
 }
 
 /*
- *  Sets the transformation matrix and its inverse (T and iT, respectively).
- */
+    Sets the transformation matrix and its inverse (T and iT, respectively).
+*/
 void CoordsLib::_setT() {
   float subT1[3][3], subT2[3][3], aux[3][3];
 
@@ -169,11 +169,11 @@ void CoordsLib::_setT() {
 }
 
 /*
- * Horizontal coordinates (ac, alt) obtained from equatorial ones and time (ar, dec, t).
- *
- * If the third reference object is not established, it calculates it by calling the
- * proper function.
- */
+   Horizontal coordinates (ac, alt) obtained from equatorial ones and time (ar, dec, t).
+
+   If the third reference object is not established, it calculates it by calling the
+   proper function.
+*/
 void CoordsLib::getHCoords(float ar, float dec, float t, float *ac, float *alt) {
   float HVC[3];
   float EVC[3];
@@ -193,11 +193,11 @@ void CoordsLib::getHCoords(float ar, float dec, float t, float *ac, float *alt) 
 }
 
 /*
- * Equatorial coordinates (ar, dec) obtained from horizontal ones and time (ac, alt, t).
- *
- * If the third reference object is not established, it calculates it by calling the
- * proper function.
- */
+   Equatorial coordinates (ar, dec) obtained from horizontal ones and time (ac, alt, t).
+
+   If the third reference object is not established, it calculates it by calling the
+   proper function.
+*/
 void CoordsLib::getECoords(float ac, float alt, float t, float *ar, float *dec) {
   float HVC[3];
   float EVC[3];

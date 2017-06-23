@@ -1,22 +1,29 @@
 void executecommand()
 {
+  flagCommand = 1;
+  SerialPrintDebug(String(Command[numCommandexec][0])) ;
+
+  SerialPrintDebug(String(Command[numCommandexec])) ;
+  
+  
   if (cmdComplete) {
-    if (Led2Stado == LOW)
-      Led2Stado = HIGH;
+     cmdComplete = false;
+    if (ledStateG == LOW)
+      ledStateG = HIGH;
     else
-      Led2Stado = LOW;
-    digitalWrite(Led2Pin, Led2Stado);
+      ledStateG = LOW;
+    digitalWrite(LedG, ledStateG);
     /*    Serial.print("LESTEMount:  ");
         Serial.println(LESTEMount);
         Serial.print("LESTEAlvo:  ");
         Serial.println(LESTEAlvo);
 
-    Serial.print("ManualManual:  ");
-    Serial.println(cmdComplete);
+      Serial.print("ManualManual:  ");
+      Serial.println(cmdComplete);
 
-    Serial.println(inputcmd);*/
-    PCommadMillis = currentMillis + 3000;  //adiciona 5000 milis no comoando inicial
-    if (inputcmd[0] == 0x06)
+      Serial.println(Command[numCommandexec]);*/
+    PrimeiroCommanMillis = currentMillis + 3000;  //adiciona 5000 milis no comoando inicial
+    if (Command[numCommandexec][0] == 0x06)
     {
       SerialPrint("#");
       /*
@@ -27,10 +34,10 @@ void executecommand()
         L If scope in Land Mode
         P If scope in Polar Mode */
     }
-    if (inputcmd[1] == '$') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == '$') {
+      switch (Command[numCommandexec][2]) {
         case 'B':
-          switch (inputcmd[3]) {
+          switch (Command[numCommandexec][3]) {
             case 'D':
               //setDECbacklash();
               break;
@@ -40,12 +47,12 @@ void executecommand()
           }
       }
     }
-    if (inputcmd[1] == 'B') {
+    if (Command[numCommandexec][1] == 'B') {
       SerialPrint("#");
     }
 
-    if (inputcmd[1] == 'C') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'C') {
+      switch (Command[numCommandexec][2]) {
         case 'S':
           synctelescope();
           break;
@@ -54,15 +61,15 @@ void executecommand()
           break;
       }
     }
-    if (inputcmd[1] == 'D') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'D') {
+      switch (Command[numCommandexec][2]) {
         case '#':
           CaracterControle();
           break;
       }
     }
-    if (inputcmd[1] == 'G') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'G') {
+      switch (Command[numCommandexec][2]) {
         case 'A':
           //printALTmount();
           break;
@@ -115,7 +122,7 @@ void executecommand()
           //printAZmount();
           break;
         case 'V':
-          switch (inputcmd[3]) {
+          switch (Command[numCommandexec][3]) {
             case 'D':
               //printFirmwareDate();
               break;
@@ -136,34 +143,58 @@ void executecommand()
       }
     }
 
-    if (inputcmd[1] == 'H') //set Hardware
+    if (Command[numCommandexec][1] == 'H') //set Hardware
     {
-      switch (inputcmd[2]) {
+      switch (Command[numCommandexec][2]) {
         case 'S':
-          if (inputcmd[4] == 'A')//:HSRA0000000#
+          if (Command[numCommandexec][3] == 'd')//:HSd#Off DEBUG
           {
-            //setMaxPassoAlt();
+            flagDebug = 0;
           }
-          if (inputcmd[4] == 'B')//:HSRB0000000#
+          if (Command[numCommandexec][3] == 'D')//:HSD#On DEBUG
           {
-            //setMaxPassoAz();//:HSRB0000000#
+            flagDebug = 1;
           }
-          if (inputcmd[3] == 'T')//:HST0000000#
+          if (Command[numCommandexec][4] == 'L') //:HSAL0000000#
           {
-            //setMinTimer(); //:HST0000000#
+            setMaxPassoRA();
+          }
+          if (Command[numCommandexec][4] == 'Z') //:HSAZ0000000#
+          {
+            setMaxPassoDEC();//:HSRB0000000#
+          }
+          if (Command[numCommandexec][3] == 'T') //:HST0000000#
+          {
+            setMinTimer();
+          }
+          if (Command[numCommandexec][8] == 'N') //:HSETUPON#
+          {
+            RotinadeSetup();
+          }
+          if (Command[numCommandexec][8] == 'F') //:HSETUPOFF#
+          {
+            RotinadeSetupOff();
+          }
+          if (Command[numCommandexec][5] == 'A') //:HSSRA0#
+          {
+            setSentidoRA(); //:HSSRA0#
+          }
+          if (Command[numCommandexec][5] == 'E') //:HSSDEC0#
+          {
+            setSentidoDEC(); //:HSSDEC0#
           }
           break;
 
         case 'G':
-          if (inputcmd[4] == 'A')//:HGRA#
+          if (Command[numCommandexec][4] == 'A')//:HGRA#
           {
-            //getMaxPassoAlt();
+            //getMaxPassoRA();
           }
-          if (inputcmd[4] == 'B')//:HGRB#
+          if (Command[numCommandexec][4] == 'B')//:HGRB#
           {
-            //getMaxPassoAz();//:HGRB#
+            //getMaxPassoDEC();//:HGRB#
           }
-          if (inputcmd[3] == 'T')//:HGT#
+          if (Command[numCommandexec][3] == 'T')//:HGT#
           {
             //getMinTimer(); //:HGT#
           }
@@ -171,8 +202,8 @@ void executecommand()
       }
     }
 
-    if (inputcmd[1] == 'M') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'M') {
+      switch (Command[numCommandexec][2]) {
         case 'S':
           gototeleEQAR();
           break;
@@ -198,12 +229,12 @@ void executecommand()
       Set rate to Move  :RM#  Reply: [none]
       Set rate to Slew  :RS#  Reply: [none]
       Set rate to n (1-9)*3 :Rn#  Reply: [none]   */
-    if (inputcmd[1] == 'R') {
+    if (Command[numCommandexec][1] == 'R') {
       MoveRate();
     }
 
-    if (inputcmd[1] == 'S') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'S') {
+      switch (Command[numCommandexec][2]) {
         case 'C':
           setLocalData();
           break;
@@ -247,12 +278,12 @@ void executecommand()
         High - Dec/Az/El displays and messages HH:MM:SS sDD*MM:SS
         Returns Nothing */
     }
-    if (inputcmd[1] == 'U') {
+    if (Command[numCommandexec][1] == 'U') {
       //SerialPrint("00:00:00#");
     }
 
-    if (inputcmd[1] == 'Q') {
-      switch (inputcmd[2]) {
+    if (Command[numCommandexec][1] == 'Q') {
+      switch (Command[numCommandexec][2]) {
         case 's':
           parasul();
           break;
@@ -280,12 +311,20 @@ void executecommand()
 
     ///////////////////////////////////Finalizacao do comando
     delay(1);
-    for (int j = 0; j < 19; j++) {
-      inputcmd[j] = ' ';
-    }
-    cmdComplete = false;
   } else
   {}
+   for (int j = 0; j < 15; j++) {
+    Command[numCommandexec][j] = ' ';
+  }
+  //Passa para o proximo
+  numCommandexec = numCommandexec  + 1;
+  if (numCommandexec > 14 )
+  {
+    numCommandexec = 0;
+  }
+
+  flagCommand = 0;
+  delay(1);
 }
 
 
@@ -322,6 +361,23 @@ void printUTC() //sHH#
   SerialPrint("str");
 }
 
+void PrintLocalHora()//:Get time (Local)   :GLHH:MM:SS#  Reply: HH:MM:SS#
+{
+  int hhl = int(hour());
+  if (hhl > 23)
+  {
+    hhl = hhl - 24;
+  }
+  if (hhl < 0)
+  {
+    hhl = hhl + 24;
+  }
+
+
+  char str[10];
+  sprintf(str, "%02d:%02d:%02d#", hhl, int(minute()), int(second()));
+  SerialPrint(str);
+}
 
 /////////////////////Funcoes GET
 
@@ -354,10 +410,10 @@ void printRAmount() //:GR# Get Telescope RA Returns: HH:MM.T# or HH:MM:SS#
 
 void printDECmount() //:GD# Get Telescope Declination. Returns: sDD*MM# or sDD*MM'SS#
 { /*double tmpeixoDECGrausDecimal = eixoDECGrausDecimal;  //tmpeixoDECGrausDecimal correção do flip
-  while (tmpeixoDECGrausDecimal < -180.0)
-  tmpeixoDECGrausDecimal = tmpeixoDECGrausDecimal + 180.0;
-  while (tmpeixoDECGrausDecimal > 180.0)
-  tmpeixoDECGrausDecimal = tmpeixoDECGrausDecimal - 180.0;*/
+    while (tmpeixoDECGrausDecimal < -180.0)
+    tmpeixoDECGrausDecimal = tmpeixoDECGrausDecimal + 180.0;
+    while (tmpeixoDECGrausDecimal > 180.0)
+    tmpeixoDECGrausDecimal = tmpeixoDECGrausDecimal - 180.0;*/
 
   int Ddeg = abs((int)DecDegtoDeg(eixoDECGrausDecimal));
   int Min = abs((int)DecDegtoMin(eixoDECGrausDecimal));
@@ -377,15 +433,15 @@ void setlatitude() //:StsDD*MM# Sets the current site latitude to sDD*MM# Return
 {
 
   String str = "";
-  str += inputcmd[4];
-  str += inputcmd[5];
+  str += Command[numCommandexec][4];
+  str += Command[numCommandexec][5];
   int DD = str.toInt();
   str = "";
-  str += inputcmd[7];
-  str += inputcmd[8];
+  str += Command[numCommandexec][7];
+  str += Command[numCommandexec][8];
   int MM = str.toInt();
   str = "";
-  if (inputcmd[3] == '-')
+  if (Command[numCommandexec][3] == '-')
   {
     DD = DD * (-1);
   }
@@ -402,16 +458,16 @@ void setlongitude() //:SgsDDD*MM# Set current site's longitude to DDD*MM an ASCI
 //NO PROTOCOLO DA MEADE O SINAL E† AO CONTRARIO
 {
   String str = "";
-  str += inputcmd[4];
-  str += inputcmd[5];
-  str += inputcmd[6];
+  str += Command[numCommandexec][4];
+  str += Command[numCommandexec][5];
+  str += Command[numCommandexec][6];
   int DD = str.toInt();
   str = "";
-  str += inputcmd[8];
-  str += inputcmd[9];
+  str += Command[numCommandexec][8];
+  str += Command[numCommandexec][9];
   int MM = str.toInt();
   str = "";
-  if (inputcmd[3] != '-')
+  if (Command[numCommandexec][3] != '-')
   {
     DD = DD * (-1);
   }
@@ -426,10 +482,10 @@ void setlongitude() //:SgsDDD*MM# Set current site's longitude to DDD*MM an ASCI
 void setHoraparaUTC() //:SG-03# :SGsHH.H# Set the number of hours added to local time to yield UTC
 {
   String str = "";
-  str += inputcmd[4];
-  str += inputcmd[5];
+  str += Command[numCommandexec][4];
+  str += Command[numCommandexec][5];
   UTC = str.toInt();
-  if (inputcmd[3] == '-')
+  if (Command[numCommandexec][3] == '-')
   {
     UTC = UTC * -1;
   }
@@ -439,16 +495,16 @@ void setHoraparaUTC() //:SG-03# :SGsHH.H# Set the number of hours added to local
 void setLocalHora()//:SLHH:MM:SS#  Set the local Time
 {
   String str = "";
-  str += inputcmd[3];
-  str += inputcmd[4];
+  str += Command[numCommandexec][3];
+  str += Command[numCommandexec][4];
   int HH = str.toInt();
   str = "";
-  str += inputcmd[6];
-  str += inputcmd[7];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
   int MM = str.toInt();
   str = "";
-  str += inputcmd[9];
-  str += inputcmd[10];
+  str += Command[numCommandexec][9];
+  str += Command[numCommandexec][10];
   int SS = str.toInt();
   str = "";
   int dia = day();
@@ -467,16 +523,16 @@ void setLocalHora()//:SLHH:MM:SS#  Set the local Time
 void setLocalData() //:SCMM/DD/YY# Change Handbox Date to MM/DD/YY #:SC 03/20/14#
 {
   String str = "";
-  str += inputcmd[3];
-  str += inputcmd[4];
+  str += Command[numCommandexec][3];
+  str += Command[numCommandexec][4];
   int mes = str.toInt();
   str = "";
-  str += inputcmd[6];
-  str += inputcmd[7];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
   int dia = str.toInt();
   str = "";
-  str += inputcmd[9];
-  str += inputcmd[10];
+  str += Command[numCommandexec][9];
+  str += Command[numCommandexec][10];
   int ano = str.toInt();
   str = "";
   ano = ano + 2000;
@@ -497,16 +553,16 @@ void setLocalData() //:SCMM/DD/YY# Change Handbox Date to MM/DD/YY #:SC 03/20/14
 void setRAAlvo() //:Sr03:43:56# Set target RA   :SrHH:MM:SS# *  Reply: 0 or 1#
 {
   String str = "";
-  str += inputcmd[3];
-  str += inputcmd[4];
+  str += Command[numCommandexec][3];
+  str += Command[numCommandexec][4];
   int HH = str.toInt();
   str = "";
-  str += inputcmd[6];
-  str += inputcmd[7];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
   int MM = str.toInt();
   str = "";
-  str += inputcmd[9];
-  str += inputcmd[10];
+  str += Command[numCommandexec][9];
+  str += Command[numCommandexec][10];
   int SS = str.toInt();
   str = "";
   RAAlvo = Hours2DecDegrees(HH, MM, SS);
@@ -517,20 +573,20 @@ void setRAAlvo() //:Sr03:43:56# Set target RA   :SrHH:MM:SS# *  Reply: 0 or 1#
 void setDECAlvo() //Set target Dec  :SdsDD:MM:SS# * Reply: 0 or 1#
 {
   String str = "";
-  str += inputcmd[4];
-  str += inputcmd[5];
+  str += Command[numCommandexec][4];
+  str += Command[numCommandexec][5];
   int DD = str.toInt();
   str = "";
-  str += inputcmd[7];
-  str += inputcmd[8];
+  str += Command[numCommandexec][7];
+  str += Command[numCommandexec][8];
   int MM = str.toInt();
   str = "";
-  str += inputcmd[10];
-  str += inputcmd[11];
+  str += Command[numCommandexec][10];
+  str += Command[numCommandexec][11];
   int SS = str.toInt();
   DECAlvo = DegMinSec2DecDeg(DD, MM, SS);
   str = "";
-  if (inputcmd[3] == '-')
+  if (Command[numCommandexec][3] == '-')
   {
     DECAlvo = DECAlvo * (-1);
   }
@@ -677,11 +733,11 @@ void AtualizaGoto()  //Garante Atualizaçao do AlvoRA durante o delocamento e at
       ManualManual = 0;
       int HAmountAlvotmp = int( HAAlvo / ResolucaoeixoHAGrausDecimal);
       int DECmountAlvotmp = int( DECAlvo / ResolucaoeixoDECGrausDecimal);
-      int acertaerro = abs(MotorHA.distanceToGo())  + abs(MotorDEC.distanceToGo());
+      int acertaerro = abs(MotorRA.distanceToGo())  + abs(MotorDEC.distanceToGo());
       /*
-      Serial.print("acertaerro:  ");
-      Serial.println(acertaerro);*/
-      if (acertaerro < ((NumPassoHA + NumPassoDEC) / 200))
+        Serial.print("acertaerro:  ");
+        Serial.println(acertaerro);*/
+      if (acertaerro < ((MaxPassoRA + MaxPassoDEC) / 200))
       {
         // Serial.println(acertaerro);
         HAmountAlvo = HAmountAlvotmp;
@@ -706,7 +762,7 @@ void Stoptelescope () // Stop telescope   :Q#   Reply: [none]
 void moveleste()
 { Acompanhamento = false;
   paramotorgeral = false;
-  HAmountAlvo = (NumPassoHA * -10);
+  HAmountAlvo = (MaxPassoRA * -10);
   SetAlvo();
   ManualManual = ManualManual + 1;
 }
@@ -715,7 +771,7 @@ void moveleste()
 void moveoeste()
 { Acompanhamento = false;
   paramotorgeral = false;
-  HAmountAlvo = (NumPassoHA * 10);
+  HAmountAlvo = (MaxPassoRA * 10);
   SetAlvo();
   ManualManual = ManualManual + 1;
 }
@@ -724,7 +780,7 @@ void moveoeste()
 void movenorte()
 { Acompanhamento = false;
   paramotorgeral = false;
-  DECmountAlvo = (NumPassoDEC * -10);
+  DECmountAlvo = (MaxPassoDEC * -10);
   SetAlvo();
   ManualManual = ManualManual + 1;
 }
@@ -733,7 +789,7 @@ void movenorte()
 void movesul()
 { Acompanhamento = false;
   paramotorgeral = false;
-  DECmountAlvo = (NumPassoDEC * 10);
+  DECmountAlvo = (MaxPassoDEC * 10);
   SetAlvo();
   ManualManual = ManualManual + 1;
 }
@@ -741,7 +797,7 @@ void movesul()
 
 void paraleste()                                 //:Qe# Reply: [none]
 {
-  HAmount = MotorHA.currentPosition();
+  HAmount = MotorRA.currentPosition();
   HAmountAlvo = HAmount;
   SetAlvo();
   ParaMotoresHA();
@@ -752,7 +808,7 @@ void paraleste()                                 //:Qe# Reply: [none]
 //Move telescope west (at current rate)   :Qw#  Reply: [none]
 void paraoeste()
 {
-  HAmount = MotorHA.currentPosition();
+  HAmount = MotorRA.currentPosition();
   HAmountAlvo = HAmount;
   SetAlvo();
   ParaMotoresHA();
@@ -784,7 +840,7 @@ void parasul()
 void MoveRate()
 {
 
-  switch (inputcmd[2]) {
+  switch (Command[numCommandexec][2]) {
     case '0':
       accel = FreqSideralHzHA * 2;
       break;
@@ -827,6 +883,115 @@ void MoveRate()
       break;
   }
 
+}
+void setMaxPassoRA()  //:HSRA0000000#
+{
+  String str = "";
+  str += Command[numCommandexec][5];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
+  str += Command[numCommandexec][8];
+  str += Command[numCommandexec][9];
+  str += Command[numCommandexec][10];
+  str += Command[numCommandexec][11];
+  unsigned int SS = str.toInt();
+  configurationFromFlash.MaxPassoRA = SS;
+  MaxPassoRA = configurationFromFlash.MaxPassoRA;
+  // write configuration struct to flash at adress 4
+  byte b2[sizeof(Configuration)]; // create byte array to store the struct
+  memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+  dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+  SerialPrint("1");
+
+}
+
+void setMaxPassoDEC() //:HSRB0000000#
+{
+  String str = "";
+  str += Command[numCommandexec][5];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
+  str += Command[numCommandexec][8];
+  str += Command[numCommandexec][9];
+  str += Command[numCommandexec][10];
+  str += Command[numCommandexec][11];
+  unsigned int SS = str.toInt();
+  configurationFromFlash.MaxPassoDEC = SS;
+  MaxPassoDEC = configurationFromFlash.MaxPassoDEC;
+  byte b2[sizeof(Configuration)]; // create byte array to store the struct
+  memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+  dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+  SerialPrint("1");
+
+}
+
+void setMinTimer() //:HST00000#
+{
+  String str = "";
+  str += Command[numCommandexec][4];
+  str += Command[numCommandexec][5];
+  str += Command[numCommandexec][6];
+  str += Command[numCommandexec][7];
+  str += Command[numCommandexec][8];
+  unsigned int SS = str.toInt();
+  configurationFromFlash.MinTimer = SS + 200;
+  MinTimer = configurationFromFlash.MinTimer ;  //valor minimo
+  byte b2[sizeof(Configuration)]; // create byte array to store the struct
+  memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+  dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+  Timer3.stop();
+  Timer3.start(MinTimer);
+
+  SerialPrint("1");
+}
+
+void setSentidoRA() //:HSSRA0#
+{
+  String str = "";
+  str += Command[numCommandexec][6];
+  unsigned int RA = str.toInt();
+  configurationFromFlash.SentidoRA = RA;
+  SentidoRA = configurationFromFlash.SentidoRA;
+  byte b2[sizeof(Configuration)]; // create byte array to store the struct
+  memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+  dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+  SentidodosMotores();
+  SerialPrint("1");
+}
+void setSentidoDEC() //:HSSDEC0#
+{
+  String str = "";
+  str += Command[numCommandexec][7];
+  unsigned int Dec = str.toInt();
+  configurationFromFlash.SentidoDEC = Dec;
+  SentidoDEC = configurationFromFlash.SentidoDEC;
+  byte b2[sizeof(Configuration)]; // create byte array to store the struct
+  memcpy(b2, &configurationFromFlash, sizeof(Configuration)); // copy the struct to the byte array
+  dueFlashStorage.write(4, b2, sizeof(Configuration)); // write byte array to flash
+  SentidodosMotores();
+  SerialPrint("1");
+}
+
+
+void getMaxPassoRA()  //:HGRA#
+{
+  char str[8];
+  sprintf(str, "%07d#", int(MaxPassoRA));
+  SerialPrint(str);
+}
+
+void getMaxPassoDEC() //:HGRB#
+{
+  char str[8];
+  sprintf(str, "%07d#", int(MaxPassoDEC));
+  SerialPrint(str);
+}
+
+void getMinTimer() //:HGT#
+{
+  char str[8];
+  sprintf(str, "%07d#", int(MinTimer));
+  SerialPrint(str);
 }
 
 

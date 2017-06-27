@@ -86,7 +86,7 @@ int setupflag = 0;
 
 
 //Variaveis de controle do MOTOR ----------------------------------------------------------------------------------------------------------------
-int MaxPassoRA, MaxPassoDEC, HAmount, DECmount, HAmountAlvo, DECmountAlvo, GotoQualidade, ManualManual = 0;
+int MaxPassoRA, MaxPassoDEC, RAmount, DECmount, RAmountAlvo, DECmountAlvo, GotoQualidade, ManualManual = 0;
 double ResolucaoeixoHAGrausDecimal, ResolucaoeixoDECGrausDecimal, eixoHAGrausDecimal, eixoDECGrausDecimal, DECAlvo, RAAlvo, HAAlvo, ALTAlvo, AZAlvo;
 boolean SideralRate = false, SideralRateold = false, Acompanhamento = false, paramotorgeral = false, LESTEAlvo = true, LESTEMount = true;
 
@@ -96,9 +96,9 @@ double FreqSideralHzDEC = 1, FreqSideralHzHA = 1, accel = 999999999;
 #define Reducao1DEC 50
 #define Reducao2DEC 7.5 //(90 coroa /12 piao)
 #define PassoMotorRA 200
-#define MicroPassoHA 64
-#define Reducao1HA 50
-#define Reducao2HA 7.5 //(90 coroa /12 piao)
+#define MicroPassoRA 64
+#define Reducao1RA 50
+#define Reducao2RA 7.5 //(90 coroa /12 piao)
 
 //Botão deboucing Pino 11 referencia e 12 leitura
 int buttonState = 0;
@@ -147,7 +147,7 @@ void setup() {
   pinMode(11, OUTPUT);
   digitalWrite(11, HIGH);
 
-  MaxPassoRA = PassoMotorRA * MicroPassoHA * Reducao1HA * Reducao2HA;
+  MaxPassoRA = PassoMotorRA * MicroPassoRA * Reducao1RA * Reducao2RA;
   MaxPassoDEC = PassoMotorDEC * MicroPassoDEC * Reducao1DEC * Reducao2DEC;
 
   /* Flash is erased every time new code is uploaded. Write the default configuration to flash if first time */

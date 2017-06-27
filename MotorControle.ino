@@ -53,7 +53,7 @@ void CalculaVelocidadeSideral() {
   //dia estrelar em milis 86164098
 
   FreqSideralHzDEC = 1000 / (86164098.903691 / PassoMotorDEC / MicroPassoDEC / Reducao1DEC / Reducao2DEC);
-  FreqSideralHzHA = 1000 / (86164098.903691 / PassoMotorRA / MicroPassoHA / Reducao1HA / Reducao2HA);
+  FreqSideralHzHA = 1000 / (86164098.903691 / PassoMotorRA / MicroPassoRA / Reducao1RA / Reducao2RA);
   //FreqSideralHzHA=55.8;
 }
 
@@ -72,30 +72,30 @@ void ParaMotoresDEC()
 
 void CalcPosicaoPasso()
 {
-  HAmount = MotorRA.currentPosition();
+  RAmount = MotorRA.currentPosition();
   DECmount = MotorDEC.currentPosition();
-  eixoHAGrausDecimal = ResolucaoeixoHAGrausDecimal * HAmount;
+  eixoHAGrausDecimal = ResolucaoeixoHAGrausDecimal * RAmount;
   eixoDECGrausDecimal = ResolucaoeixoDECGrausDecimal * DECmount;
 }
 
 void SincronizaMotores()
 {
-  if (HAmountAlvo < (MaxPassoRA / 2)) //RTA para alterar o ZERO do HA
+  if (RAmountAlvo < (MaxPassoRA / 2)) //RTA para alterar o ZERO do HA
   {
-    HAmountAlvo = HAmountAlvo + MaxPassoRA;
+    RAmountAlvo = RAmountAlvo + MaxPassoRA;
   }
-  MotorRA.setCurrentPosition((int)HAmountAlvo);
+  MotorRA.setCurrentPosition((int)RAmountAlvo);
   MotorDEC.setCurrentPosition((int)DECmountAlvo );
   CalcPosicaoPasso();
 }
 
 void SetAlvo()
 {
-  if (HAmountAlvo < (MaxPassoRA / 2))  //RTA para alterar o ZERO do HA
+  if (RAmountAlvo < (MaxPassoRA / 2))  //RTA para alterar o ZERO do HA
   {
-    HAmountAlvo = HAmountAlvo + MaxPassoRA;
+    RAmountAlvo = RAmountAlvo + MaxPassoRA;
   }
-  MotorRA.moveTo(HAmountAlvo);
+  MotorRA.moveTo(RAmountAlvo);
   MotorDEC.moveTo(DECmountAlvo);
 }
 
@@ -109,7 +109,7 @@ void movimentamotores()
   {
     MotorDEC.run();
   }
-  if (HAmountAlvo == HAmount)
+  if (RAmountAlvo == RAmount)
   {
     MotorDEC.run();
   } else

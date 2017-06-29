@@ -42,8 +42,8 @@ int ledStateG = LOW;
 
 
 /*valores maximo para o passo (Valor ideal 1286400)*/
-double dMaxPassoRA = 3844654; /* //valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)/4    (16*200*(117/11)*56)*/
-double dMaxPassoDEC = 3844654; /*/valor de resolucao AR = Passo * MicroPasso * reducao ex(200*16*402)   (16*200*(118/11)*57)*/
+double dMaxPassoRA = 3844654;  /* valor de resolucao AR = Passo * MicroPasso * reducao  */
+double dMaxPassoDEC = 3844654; /* valor de resolucao DEC = Passo * MicroPasso * reducao */
 int dMinTimer = 500; /*/passo*/
 double dMaxSpeedAlt = 3844654;
 double dMaxSpeedAz = 3844654;
@@ -91,14 +91,6 @@ double ResolucaoeixoHAGrausDecimal, ResolucaoeixoDECGrausDecimal, eixoHAGrausDec
 boolean SideralRate = false, SideralRateold = false, Acompanhamento = false, paramotorgeral = false, LESTEAlvo = true, LESTEMount = true;
 
 double FreqSideralHzDEC = 1, FreqSideralHzHA = 1, accel = 999999999;
-#define PassoMotorDEC 200
-#define MicroPassoDEC 64
-#define Reducao1DEC 50
-#define Reducao2DEC 7.5 //(90 coroa /12 piao)
-#define PassoMotorRA 200
-#define MicroPassoRA 64
-#define Reducao1RA 50
-#define Reducao2RA 7.5 //(90 coroa /12 piao)
 
 //Botão deboucing Pino 11 referencia e 12 leitura
 int buttonState = 0;

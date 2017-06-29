@@ -38,12 +38,10 @@ void iniciaosmotores()
   
   //MotorRA.setPinsInverted   (   bool    directionInvert = false,     bool    stepInvert = false,     bool    enableInvert = false )
   MotorRA.setPinsInverted (true, false, false);
-  MotorRA.setAcceleration(MaxPassoRA / 2000);
   MotorRA.setCurrentPosition(0);
   MotorRA.setMaxSpeed(FreqSideralHzHA);
   MotorRA.setSpeed(FreqSideralHzHA);
   MotorDEC.setPinsInverted (false, false, false);
-  MotorDEC.setAcceleration(MaxPassoDEC / 2000);
   MotorDEC.setCurrentPosition(0);
   MotorDEC.setMaxSpeed(FreqSideralHzDEC);
   MotorDEC.setSpeed(FreqSideralHzDEC);
@@ -52,8 +50,8 @@ void iniciaosmotores()
 void CalculaVelocidadeSideral() {
   //dia estrelar em milis 86164098
 
-  FreqSideralHzDEC = 1000 / (86164098.903691 / PassoMotorDEC / MicroPassoDEC / Reducao1DEC / Reducao2DEC);
-  FreqSideralHzHA = 1000 / (86164098.903691 / PassoMotorRA / MicroPassoRA / Reducao1RA / Reducao2RA);
+  FreqSideralHzDEC = 86164.098903691 / MaxPassoDEC;
+  FreqSideralHzHA = 86164.098903691 / MaxPassoRA;
   //FreqSideralHzHA=55.8;
 }
 
@@ -104,17 +102,17 @@ void movimentamotores()
 
   if (DECmountAlvo == DECmount)
   {
-    MotorRA.run();
+    MotorRA.runSpeed();
   } else
   {
-    MotorDEC.run();
+    MotorDEC.runSpeed();
   }
   if (RAmountAlvo == RAmount)
   {
-    MotorDEC.run();
+    MotorDEC.runSpeed();
   } else
   {
-    MotorRA.run();
+    MotorRA.runSpeed();
   }
 }
 

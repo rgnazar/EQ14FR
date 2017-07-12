@@ -243,57 +243,6 @@ int DecHour2HoursSEC(double hDecHour) {
 
 }
 
-void SegundoFracaoFuncao()
-{
-  if (currentMillis > SegundoFracaoMillis)
-  {
-    SegundoFracaoMillis = currentMillis + 6;
-    Segundo = second();
-    if (SegundoOld == Segundo)
-    {
-      milesimos =  milesimos + 7;
-      if (milesimos > 999)
-      {
-        milesimos = 999;
-      }
-      SegundoFracao = milesimos * 0.001;
-      SegundoFracao = SegundoFracao + Segundo;
-    }
-    else
-    {
-      SegundoFracao = Segundo;
-      SegundoOld = Segundo;
-      milesimos = 0;
-    }
-  }
-}
-
-void AlteraMicroSeg() {
-
-
-  //Cria MicroSeg Virtusal
-  Segundo = second();
-  if (MilissegundoSeg == Segundo)
-  {
-    Microssegundo =  Microssegundo + MinTimer;
-    if (Microssegundo > 999999)
-    {
-      Microssegundo = 999999;
-    }
-    SegundoFracao = Microssegundo * 0.000001;
-    SegundoFracao = SegundoFracao + Segundo;
-  }
-  else
-  {
-    MilissegundoSeg = Segundo;
-    Microssegundo = 1;
-  }
-}
-
-
-
-
-
 
 
 

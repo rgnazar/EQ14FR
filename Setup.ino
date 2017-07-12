@@ -1,83 +1,86 @@
 void RotinadeSetup() //:HSETUPON#
 {
   SerialPrint("\n ######################################################################### \n");
-  if (setupflag == 0)
-  {
-    SerialPrint(" \n Rotina inicial de Setup \n ");
-  digitalWrite(MotorRA_Direcao, LOW);
-  digitalWrite(MotorRA_Passo, LOW);
-  digitalWrite(MotorRA_Sleep, HIGH);
-  digitalWrite(MotorRA_Reset, HIGH);
-  digitalWrite(MotorRA_M2, LOW);
-  digitalWrite(MotorRA_M1, LOW);
-  digitalWrite(MotorRA_M0, LOW);
-  digitalWrite(MotorRA_Ativa, LOW);
-  digitalWrite(MotorDEC_Direcao, LOW);
-  digitalWrite(MotorDEC_Passo, LOW);
-  digitalWrite(MotorDEC_Sleep, HIGH);
-  digitalWrite(MotorDEC_Reset, HIGH);
-  digitalWrite(MotorDEC_M2, LOW);
-  digitalWrite(MotorDEC_M1, LOW );
-  digitalWrite(MotorDEC_M0, LOW);
-  digitalWrite(MotorDEC_Ativa, LOW);
-  }
+  SerialPrint(" \n Rotina inicial de Setup \n ");
   setupflag = 2;
-
-  SerialPrint(" \n O valor atual timer e: ");
-  SerialPrint(String(MinTimer - 200));
-  SerialPrint(" (:HST00000# -> Quanto menor mais rapido ate o limite do motor ambos motores) \n");
-  delay(1000);
+  CalculaVelocidadeSideral();
+  SerialPrint(" \n O valor atual FreqSideralHzHA :  (Varia conforme a reducao)");
+  SerialPrint(String(FreqSideralHzHA));
+  SerialPrint(" \n O valor atual FreqSideralHzDEC : (Varia conforme a reducao)");
+  SerialPrint(String(FreqSideralHzDEC));
+  SerialPrint("\n Valor maximo dos motores em X VelocidadeSideral : ");
+  SerialPrint(String(MinTimer));
+  SerialPrint(" \n (:HST00000# -> Quanto menor maior a velocidade maxima) \n ***QUANDO VALOR E EXAGERADO FIREGOTO TRAVA**** \n");
 
   SerialPrint(" \n O Sentido do motor RA/Alt e: ");
   if (SentidoRA == 0)
   {
-    SerialPrint("Horario (:HSSRA0# -> Horario // :HSSRA1# -> AntiHorario)\n");
+    SerialPrint("Horario \n(:HSSRA0# -> Horario // :HSSRA1# -> AntiHorario)\n");
   }
   else
   {
-    SerialPrint("Anti-Horario (:HSSRA0# -> Horario // :HSSRA1# -> AntiHorario)\n");
+    SerialPrint("Anti-Horario \n(:HSSRA0# -> Horario // :HSSRA1# -> AntiHorario)\n");
   }
-  delay(1000);
-
-  SerialPrint(" \n Acionamento do motor RA/ALT em velocidade maxima \n ");
-  MotorDEC.setSpeed(0);
-  MotorRA.setSpeed(MinTimer * MinTimer);
-  delay(6000);
-  MotorRA.setSpeed(0);
 
 
   SerialPrint(" \n O Sentido do motor DEC/AZ e: ");
   if (SentidoDEC == 0)
   {
-    SerialPrint("Horario (:HSSDEC0# -> Horario // :HSSDEC1# -> AntiHorario)\n");
+    SerialPrint("Horario \n (:HSSDEC0# -> Horario // :HSSDEC1# -> AntiHorario)\n");
   }
   else
   {
-    SerialPrint("Anti-Horario (:HSSDEC0# -> Horario // :HSSDEC1# -> AntiHorario)\n ");
+    SerialPrint("Anti-Horario \n(:HSSDEC0# -> Horario // :HSSDEC1# -> AntiHorario)\n ");
   }
-  delay(1000);
 
-  SerialPrint(" \n Acionamento do motor DEC/AZ em velocidade maxima \n ");
-  MotorRA.setSpeed(0);
-  MotorDEC.setSpeed(MinTimer * MinTimer);
-  delay(6000);
-  MotorDEC.setSpeed(0);
-
-  MotorDEC.setSpeed(0);
-  MotorRA.setSpeed(0);
   SerialPrint(" \n Total da Relacao de engrenagens de RA/ALT: ");
-  SerialPrint(String(MaxPassoRA));
-  SerialPrint(" (:HSAL0000000# -> reducao * numero passos * micropasso)\n");
+  SerialPrint(String(NumPassoHA));
+  SerialPrint(" (:HSRA0000000# -> reducao * numero passos * micropasso)\n");
   SerialPrint(" \n Total da Relacao de engrenagens de DEC/AZ: ");
-  SerialPrint(String(MaxPassoDEC));
-  SerialPrint(" (:HSAZ0000000# -> reducao * numero passos * micropasso) \n");
+  SerialPrint(String(NumPassoDEC));
+  SerialPrint(" (:HSDE0000000# -> reducao * numero passos * micropasso) \n");
 
   SerialPrint(" \n Para sair :HSETUPOFF# ");
+
+
+  delay(1000);
+  Acompanhamento = false;
+
+  SerialPrint(" \n\n\n Acionamento do motor RA/ALT em velocidade maxima \n ");
+  //  VelocidadeSecionadaRA = FreqSideralHzHA * MaxVel;
+  //  VelocidadeSecionadaDEC = 0;
+  //  SetVelocidade();
+  MotorHA.setMaxSpeed(accel);
+  MotorDEC.setMaxSpeed(0);
+
+  MotorHA.moveTo(NumPassoHA);
+  delay(10000);
+
+  SerialPrint("\n\n \n Acionamento do motor DEC/AZ em velocidade maxima \n ");
+  MotorHA.setMaxSpeed(0);
+  MotorDEC.setMaxSpeed(accel);
+
+  MotorDEC.moveTo(NumPassoDEC);
+  //  VelocidadeSecionadaDEC = FreqSideralHzDEC * MaxVel;
+  //  VelocidadeSecionadaRA = 0;
+  //  SetVelocidade();
+  delay(10000);
+
+  //  VelocidadeSecionadaDEC = 0;
+  //  VelocidadeSecionadaRA = 0;
+  //  SetVelocidade();
+  MotorHA.setMaxSpeed(0);
+  MotorDEC.setMaxSpeed(0);
   setupflag = 1;
 }
-
-void RotinadeSetupOff() //:HSETUPOFF#
+void RotinadeSetupOff()
 {
   setupflag = 0;
+  ParaMotoresHA();
+  ParaMotoresDEC();
 }
+
+
+
+
 
